@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Deputados extends Model
+class Deputado extends Model
 {
     protected $table = 'deputados';
     protected $primaryKey = 'id';
