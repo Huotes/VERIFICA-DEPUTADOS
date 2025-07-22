@@ -1,0 +1,47 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: verifica_deputados_app
+    working_dir: /var/www
+    volumes:
+      - ./backend:/var/www
+    networks:
+      - verifica_deputados_net
+    depends_on:
+      - db
+
+  nginx:
+    image: nginx:1.28.0-alpine
+    container_name: verifica_deputados_nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./backend:/var/www
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - verifica_deputados_net
+
+  db:
+    image: postgres:17.5-alpine
+    container_name: verifica_deputados_db
+    environment:
+      POSTGRES_DB: verifica_deputados_postgres
+      POSTGRES_USER: verifica_deputados_user
+      POSTGRES_PASSWORD: verifica_deputados_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - verifica_deputados_net
+
+volumes:
+  postgres_data:
+
+networks:
+  verifica_deputados_net:
+    driver: bridge
