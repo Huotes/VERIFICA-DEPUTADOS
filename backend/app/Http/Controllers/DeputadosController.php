@@ -2,20 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Deputado;
 use Illuminate\Http\Request;
+use App\Models\Deputados;
 
-class DeputadoController extends Controller
+class DeputadosController extends Controller
 {
     public function index()
     {
-        $deputados = Deputado::paginate(15);
+        $deputados = Deputados::orderBy('nome')->limit(30)->get();
         return view('deputados.index', compact('deputados'));
     }
 
-    public function show(Deputado $deputado)
+    public function loadMore(Request $request)
     {
-        $deputado->load('despesas');
-        return view('deputados.show', compact('deputado'));
+        $offset = $request->input('offset', 0);
+        $deputados = Deputados::orderBy('nome')->offset($offset)->limit(30)->get();
+
+        return view('components.deputados-list', compact('deputados'));
     }
 }

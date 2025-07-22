@@ -1,12 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\DeputadoController;
-use App\Http\Controllers\DespesaController;
+use App\Http\Controllers\DeputadosController;
 
-Route::get('/', function () {
-    return redirect()->route('deputados.index');
-});
-
-Route::resource('deputados', DeputadoController::class)->only(['index', 'show']);
-Route::resource('despesas', DespesaController::class)->only(['index', 'show']);
+Route::get('/', [DeputadosController::class, 'index']);
+Route::get('/deputados/load', [DeputadosController::class, 'loadMore']);

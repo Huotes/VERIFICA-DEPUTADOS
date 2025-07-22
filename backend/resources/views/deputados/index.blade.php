@@ -1,35 +1,37 @@
 @extends('layouts.app')
 
-@section('title', 'Lista de Deputados')
-
 @section('content')
-<h1>Deputados</h1>
+<div id="deputados-container" class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
+    @include('components.deputados-list', ['deputados' => $deputados])
+</div>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Nome</th>
-            <th>Partido</th>
-            <th>UF</th>
-            <th>Email</th>
-            <th>Telefone</th>
-            <th>Detalhes</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach($deputados as $deputado)
-            <tr>
-                <td>{{ $deputado->nome }}</td>
-                <td>{{ $deputado->partido }}</td>
-                <td>{{ $deputado->uf }}</td>
-                <td>{{ $deputado->email }}</td>
-                <td>{{ $deputado->telefone }}</td>
-                <td><a href="{{ route('deputados.show', $deputado) }}" class="btn btn-sm btn-primary">Ver</a></td>
-            </tr>
-        @endforeach
-    </tbody>
-</table>
+<div id="loading" class="text-center py-4 hidden">
+    <p>Carregando mais deputados...</p>
+</div>
 
-{{ $deputados->links() }}
+<script>
+let offset = 30;
+let loading = false;
 
+window.addEventListener('scroll', async () => {
+    if (loading) return;
+
+    const scrollPosition = window.innerHeight + window.scrollY;
+    const bottom = document.body.offsetHeight - 100;
+
+    if (scrollPosition >= bottom) {
+        loading = true;
+        document.getElementById('loading').classList.remove('hidden');
+
+        const response = await fetch(`/deputados/load?offset=${offset}`);
+        const html = await response.text();
+
+        document.getElementById('deputados-container').insertAdjacentHTML('beforeend', html);
+        document.getElementById('loading').classList.add('hidden');
+
+        offset += 30;
+        loading = false;
+    }
+});
+</script>
 @endsection
